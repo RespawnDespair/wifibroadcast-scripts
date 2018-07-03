@@ -24,6 +24,7 @@ function tx_function {
 
     echo
     echo
+	
     detect_nics
 
     sleep 1
