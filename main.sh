@@ -10,7 +10,8 @@
 ###############################################################################
 source global_functions.sh 
 
-TTY=`tty`
+#TTY=`tty`
+TTY="/dev/tty1"
 
 # Check for the camera
 check_camera_attached
@@ -38,7 +39,7 @@ RELAY_VIDEO_BLOCKLENGTH=1024
 RSSI_UDP_PORT=5003
 
 # Set telemetry settings based on telemetry type 
-get_telemtry_settings
+get_telemetry_settings
 
 # cts protection
 set_cts_protection
@@ -121,7 +122,7 @@ case $TTY in
 			    # kill and pause OSD so we can safeley start wbc_status
 			    ps -ef | nice grep "osd" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 			    killall wbc_status > /dev/null 2>&1
-			    nice /root/wifibroadcast_status/wbc_status "Ethernet connected. IP: $ETHCLIENTIP" 7 55 0
+			    nice /home/pi/wifibroadcast-status/wbc_status "Ethernet connected. IP: $ETHCLIENTIP" 7 55 0
 			    pause_while # make sure we don't restart osd while in pause state
 			    OSDRUNNING=`pidof /tmp/osd | wc -w`
 			    if [ $OSDRUNNING  -ge 1 ]; then
@@ -138,7 +139,7 @@ case $TTY in
 			    echo "DHCP failed"
 			    ps -ef | nice grep "osd" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 			    killall wbc_status > /dev/null 2>&1
-			    nice /root/wifibroadcast_status/wbc_status "ERROR: Could not acquire IP via DHCP!" 7 55 0
+			    nice /home/pi/wifibroadcast-status/wbc_status "ERROR: Could not acquire IP via DHCP!" 7 55 0
 			    pause_while # make sure we don't restart osd while in pause state
 			    OSDRUNNING=`pidof /tmp/osd | wc -w`
 			    if [ $OSDRUNNING  -ge 1 ]; then

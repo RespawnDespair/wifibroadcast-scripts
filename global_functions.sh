@@ -1,7 +1,8 @@
 function check_camera_attached {
 	# check if cam is detected to determine if we're going to be RX or TX
 	# only do this on one tty so that we don't run vcgencmd multiple times (which may make it hang)
-	if [ "$TTY" == "/dev/tty1" ]; then
+	#if [ "$TTY" == "/dev/tty1" ]; then
+	if [ "1" == "1" ]; then
 		CAM=`/usr/bin/vcgencmd get_camera | nice grep -c detected=1`
 		if [ "$CAM" == "0" ]; then # if we are RX ...
 			echo  "0" > /tmp/cam
@@ -10,7 +11,7 @@ function check_camera_attached {
 			echo  "1" > /tmp/cam
 		fi
 	else
-		#echo -n "Waiting until TX/RX has been determined"
+		echo -n "Waiting until TX/RX has been determined"
 		while [ ! -f /tmp/cam ]; do
 			sleep 0.5
 			#echo -n "."
@@ -40,17 +41,17 @@ function set_font_for_resolution {
 }
 
 function read_config_file {
-	if [ -e "/tmp/settings.sh" ]; then
-		OK=`bash -n /tmp/settings.sh`
+	if [ -e "/boot/settings.sh" ]; then
+		OK=`bash -n /boot/settings.sh`
 		if [ "$?" == "0" ]; then
-			source /tmp/settings.sh
+			source /boot/settings.sh
 		else
-			echo "ERROR: wifobroadcast config file contains syntax error(s)!"
+			echo "ERROR: wifibroadcast config file contains syntax error(s)!"
 			collect_errorlog
 			sleep 365d
 		fi
 	else
-		echo "ERROR: wifobroadcast config file not found!"
+		echo "ERROR: wifibroadcast config file not found!"
 		collect_errorlog
 		sleep 365d
 	fi
@@ -110,7 +111,7 @@ function set_video_player_based_fps {
 	fi
 }
 
-function get_telemtry_settings {
+function get_telemetry_settings {
 	if cat /boot/osdconfig.txt | grep -q "^#define LTM"; then
 		TELEMETRY_UDP_PORT=5001
 		TELEMETRY_TYPE=1

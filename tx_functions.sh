@@ -1,7 +1,7 @@
 function tx_function {
     killall wbc_status > /dev/null 2>&1
 
-    /root/wifibroadcast/sharedmem_init_tx
+    /home/pi/wifibroadcast-base/sharedmem_init_tx
 
     if [ "$TXMODE" == "single" ]; then
 		echo -n "Waiting for wifi card to become ready ..."
@@ -63,7 +63,7 @@ function tx_function {
     DRIVER=`cat /sys/class/net/$NICS/device/uevent | nice grep DRIVER | sed 's/DRIVER=//'`
     if [ "$CTS_PROTECTION" == "auto" ] && [ "$DRIVER" == "ath9k_htc" ]; then # only use CTS protection with Atheros
     	echo -n "Checking for other wifi traffic ... "
-		WIFIPPS=`/root/wifibroadcast/wifiscan $NICS`
+		WIFIPPS=`/home/pi/wifibroadcast-base/wifiscan $NICS`
 		echo -n "$WIFIPPS PPS: "
 		if [ "$WIFIPPS" != "0" ]; then # wifi networks detected, enable CTS
 			echo "Wifi traffic detected, CTS enabled"
@@ -125,7 +125,7 @@ function tx_function {
 	if [ "$UNDERVOLT" == "0" ]; then
 		if [ "$VIDEO_BITRATE" == "auto" ]; then
 			echo -n "Measuring max. available bitrate .. "
-			BITRATE_MEASURED=`/root/wifibroadcast/tx_measure -p 77 -b $VIDEO_BLOCKS -r $VIDEO_FECS -f $VIDEO_BLOCKLENGTH -t $VIDEO_FRAMETYPE -d $VIDEO_WIFI_BITRATE -y 0 $NICS`
+			BITRATE_MEASURED=`/home/pi/wifibroadcast-base/tx_measure -p 77 -b $VIDEO_BLOCKS -r $VIDEO_FECS -f $VIDEO_BLOCKLENGTH -t $VIDEO_FRAMETYPE -d $VIDEO_WIFI_BITRATE -y 0 $NICS`
 			BITRATE=$((BITRATE_MEASURED*$BITRATE_PERCENT/100))
 			BITRATE_KBIT=$((BITRATE/1000))
 			BITRATE_MEASURED_KBIT=$((BITRATE_MEASURED/1000))
@@ -208,15 +208,15 @@ function tx_function {
 		collect_debug /boot &
     fi
 
-    /root/wifibroadcast/rssitx $NICS &
+    /home/pi/wifibroadcast-base/rssitx $NICS &
 
     echo
     echo "Starting transmission in $TXMODE mode, FEC $VIDEO_BLOCKS/$VIDEO_FECS/$VIDEO_BLOCKLENGTH: $WIDTH x $HEIGHT $FPS fps, video bitrate: $BITRATE_KBIT kBit/s, Keyframerate: $KEYFRAMERATE"
-    nice -n -9 raspivid -w $WIDTH -h $HEIGHT -fps $FPS -b $BITRATE -g $KEYFRAMERATE -t 0 $EXTRAPARAMS -o - | nice -n -9 /root/wifibroadcast/tx_rawsock -p 0 -b $VIDEO_BLOCKS -r $VIDEO_FECS -f $VIDEO_BLOCKLENGTH -t $VIDEO_FRAMETYPE -d $VIDEO_WIFI_BITRATE -y 0 $NICS
+    nice -n -9 raspivid -w $WIDTH -h $HEIGHT -fps $FPS -b $BITRATE -g $KEYFRAMERATE -t 0 $EXTRAPARAMS -o - | nice -n -9 /home/pi/wifibroadcast-base/tx_rawsock -p 0 -b $VIDEO_BLOCKS -r $VIDEO_FECS -f $VIDEO_BLOCKLENGTH -t $VIDEO_FRAMETYPE -d $VIDEO_WIFI_BITRATE -y 0 $NICS
 
 # Older video transmit commands, might be usefull for USB webcams...
 #    v4l2-ctl -d /dev/video0 --set-fmt-video=width=1280,height=720,pixelformat='H264' -p 48 --set-ctrl video_bitrate=7000000,repeat_sequence_header=1,h264_i_frame_period=7,white_balance_auto_preset=5
-#    nice -n -9 cat /dev/video0 | /root/wifibroadcast/tx_rawsock -p 0 -b $VIDEO_BLOCKS -r $VIDEO_FECS -f $VIDEO_BLOCKLENGTH -t $VIDEO_FRAMETYPE -d $VIDEO_WIFI_BITRATE -y 0 $NICS
+#    nice -n -9 cat /dev/video0 | /home/pi/wifibroadcast-base/tx_rawsock -p 0 -b $VIDEO_BLOCKS -r $VIDEO_FECS -f $VIDEO_BLOCKLENGTH -t $VIDEO_FRAMETYPE -d $VIDEO_WIFI_BITRATE -y 0 $NICS
 
     TX_EXITSTATUS=${PIPESTATUS[1]}
 	

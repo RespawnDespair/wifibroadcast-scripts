@@ -20,7 +20,7 @@ function check_alive_function {
 		# pause while saving is in progress
 		pause_while
 		
-		ALIVE=`nice /root/wifibroadcast/check_alive`
+		ALIVE=`nice /home/pi/wifibroadcast-base/check_alive`
 		if [ $ALIVE == "0" ]; then
 			echo "no new packets, restarting hello_video and sleeping for 5s ..."
 			ps -ef | nice grep "cat /root/videofifo1" | nice grep -v grep | awk '{print $2}' | xargs kill -9

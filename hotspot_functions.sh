@@ -54,7 +54,7 @@ function hotspot_check_function {
 				echo "Ethernet device detected. IP: $IP"
 				
 				nice socat -b $TELEMETRY_UDP_BLOCKSIZE GOPEN:/root/telemetryfifo2 UDP4-SENDTO:$IP:$TELEMETRY_UDP_PORT &
-				nice /root/wifibroadcast/rssi_forward $IP 5003 &
+				nice /home/pi/wifibroadcast-base/rssi_forward $IP 5003 &
 				
 				if [ "$FORWARD_STREAM" == "rtp" ]; then
 					ionice -c 1 -n 4 nice -n -5 cat /root/videofifo2 | nice -n -5 gst-launch-1.0 fdsrc ! h264parse ! rtph264pay pt=96 config-interval=5 ! udpsink port=$VIDEO_UDP_PORT host=$IP > /dev/null 2>&1 &
@@ -65,11 +65,11 @@ function hotspot_check_function {
 				if cat /boot/osdconfig.txt | grep -q "^#define MAVLINK"; then
 					nice cat /root/telemetryfifo5 > /dev/pts/0 &
 					if [ "$MAVLINK_FORWARDER" == "mavlink-routerd" ]; then
-						ionice -c 3 nice /root/mavlink-router/mavlink-routerd -e $IP:14550 /dev/pts/1:57600 &
+						ionice -c 3 nice /home/pi/mavlink-router/mavlink-routerd -e $IP:14550 /dev/pts/1:57600 &
 					else
 						cp /boot/cmavnode.conf /tmp/
 						echo "targetip=$IP" >> /tmp/cmavnode.conf
-						ionice -c 3 nice /root/cmavnode/cmavnode --file /tmp/cmavnode.conf &
+						ionice -c 3 nice /home/pi/cmavnode/build/cmavnode --file /tmp/cmavnode.conf &
 					fi
 					
 					if [ "$DEBUG" == "Y" ]; then
@@ -91,7 +91,7 @@ function hotspot_check_function {
 				echo "Wifi device detected. IP: $IP"
 				
 				nice socat -b $TELEMETRY_UDP_BLOCKSIZE GOPEN:/root/telemetryfifo2 UDP4-SENDTO:$IP:$TELEMETRY_UDP_PORT &
-				nice /root/wifibroadcast/rssi_forward $IP 5003 &
+				nice /home/pi/wifibroadcast-base/rssi_forward $IP 5003 &
 				
 				if [ "$FORWARD_STREAM" == "rtp" ]; then
 					ionice -c 1 -n 4 nice -n -5 cat /root/videofifo2 | nice -n -5 gst-launch-1.0 fdsrc ! h264parse ! rtph264pay pt=96 config-interval=5 ! udpsink port=$VIDEO_UDP_PORT host=$IP > /dev/null 2>&1 &
@@ -103,11 +103,11 @@ function hotspot_check_function {
 					cat /root/telemetryfifo5 > /dev/pts/0 &
 					
 					if [ "$MAVLINK_FORWARDER" == "mavlink-routerd" ]; then
-						ionice -c 3 nice /root/mavlink-router/mavlink-routerd -e $IP:14550 /dev/pts/1:57600 &
+						ionice -c 3 nice /home/pi/mavlink-router/mavlink-routerd -e $IP:14550 /dev/pts/1:57600 &
 					else
 						cp /boot/cmavnode.conf /tmp/
 						echo "targetip=$IP" >> /tmp/cmavnode.conf
-						ionice -c 3 nice /root/cmavnode/cmavnode --file /tmp/cmavnode.conf &
+						ionice -c 3 nice /home/pi/cmavnode/build/cmavnode --file /tmp/cmavnode.conf &
 					fi
 					
 					if [ "$DEBUG" == "Y" ]; then
@@ -128,7 +128,7 @@ function hotspot_check_function {
 			ps -ef | nice grep "osd" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 
 	        killall wbc_status > /dev/null 2>&1
-			nice /root/wifibroadcast_status/wbc_status "Secondary display connected (Hotspot)" 7 55 0
+			nice /home/pi/wifibroadcast-status/wbc_status "Secondary display connected (Hotspot)" 7 55 0
 
 			# re-start osd
 			OSDRUNNING=`pidof /tmp/osd | wc -w`
@@ -152,7 +152,7 @@ function hotspot_check_function {
 					ps -ef | nice grep "osd" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 
 					killall wbc_status > /dev/null 2>&1
-					nice /root/wifibroadcast_status/wbc_status "Secondary display disconnected (Hotspot)" 7 55 0
+					nice /home/pi/wifibroadcast-status/wbc_status "Secondary display disconnected (Hotspot)" 7 55 0
 					# re-start osd
 					OSDRUNNING=`pidof /tmp/osd | wc -w`
 					if [ $OSDRUNNING  -ge 1 ]; then
