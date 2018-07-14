@@ -21,7 +21,7 @@ function rctx_function {
 	
     echo Building RC ...
 	
-    cd /root/wifibroadcast_rc
+    cd /home/pi/wifibroadcast-rc
     ionice -c 3 nice gcc -lrt -lpcap rctx.c -o /tmp/rctx `sdl-config --libs` `sdl-config --cflags` || {
 		echo "ERROR: Could not build RC, check joyconfig.txt!"
     }

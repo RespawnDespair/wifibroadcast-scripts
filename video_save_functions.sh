@@ -66,7 +66,7 @@ function save_function {
     nice /opt/vc/src/hello_pi/hello_video/hello_video.bin.player $VIDEOFILE $FPS &
 
     killall wbc_status > /dev/null 2>&1
-    nice /root/wifibroadcast_status/wbc_status "Saving to USB. This may take some time ..." 7 55 0 &
+    nice /home/pi/wifibroadcast-status/wbc_status "Saving to USB. This may take some time ..." 7 55 0 &
 
     echo -n "Accessing file system.. "
 
@@ -165,7 +165,7 @@ function save_function {
 				#echo "AVCONVRUNNING: $AVCONVRUNNING"
 				sleep 4
 				killall wbc_status > /dev/null 2>&1
-				nice /root/wifibroadcast_status/wbc_status "Saving - please wait ..." 7 65 0 &
+				nice /home/pi/wifibroadcast-status/wbc_status "Saving - please wait ..." 7 65 0 &
 			done
 		fi
 		
@@ -178,7 +178,7 @@ function save_function {
 		STICKGONE=0
 		while [ $STICKGONE -ne 1 ]; do
 			killall wbc_status > /dev/null 2>&1
-			nice /root/wifibroadcast_status/wbc_status "Done - USB memory stick can be removed now" 7 65 0 &
+			nice /home/pi/wifibroadcast-status/wbc_status "Done - USB memory stick can be removed now" 7 65 0 &
 			sleep 4
 			if [ ! -e "/dev/sda" ]; then
 				STICKGONE=1
@@ -194,7 +194,7 @@ function save_function {
 		STICKGONE=0
 		while [ $STICKGONE -ne 1 ]; do
 			killall wbc_status > /dev/null 2>&1
-			nice /root/wifibroadcast_status/wbc_status "ERROR: Could not access USB memory stick!" 7 65 0 &
+			nice /home/pi/wifibroadcast-status/wbc_status "ERROR: Could not access USB memory stick!" 7 65 0 &
 			sleep 4
 			if [ ! -e "/dev/sda" ]; then
 				STICKGONE=1

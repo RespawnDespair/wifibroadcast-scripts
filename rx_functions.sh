@@ -26,7 +26,7 @@ function rx_function {
         STICKGONE=0
 	while [ $STICKGONE -ne 1 ]; do
 	    killall wbc_status > /dev/null 2>&1
-	    nice /root/wifibroadcast_status/wbc_status "USB memory stick detected - please remove and re-plug after flight" 7 65 0 &
+	    nice /home/pi/wifibroadcast-status/wbc_status "USB memory stick detected - please remove and re-plug after flight" 7 65 0 &
 	    sleep 4
 	    if [ ! -e $STARTUSBDEV ]; then
 			STICKGONE=1
@@ -106,7 +106,7 @@ function rx_function {
 		sleep $AIRODUMP_SECONDS
 		sleep 2
 		
-		ionice -c 3 nice -n 19 /root/wifibroadcast_misc/raspi2png -p /wbc_tmp/airodump.png >> /dev/null
+		ionice -c 3 nice -n 19 /home/pi/wifibroadcast-misc/raspi2png -p /wbc_tmp/airodump.png >> /dev/null
 		killall airodump-ng
 		
 		sleep 1
@@ -175,14 +175,14 @@ function rx_function {
 		ionice -c 3 nice cat /root/videofifo3 >> $VIDEOFILE &
 
 		if [ "$RELAY" == "Y" ]; then
-			ionice -c 1 -n 4 nice -n -10 cat /root/videofifo4 | /root/wifibroadcast/tx_rawsock -p 0 -b $RELAY_VIDEO_BLOCKS -r $RELAY_VIDEO_FECS -f $RELAY_VIDEO_BLOCKLENGTH -t $VIDEO_FRAMETYPE -d 24 -y 0 relay0 > /dev/null 2>&1 &
+			ionice -c 1 -n 4 nice -n -10 cat /root/videofifo4 | /home/pi/wifibroadcast-base/tx_rawsock -p 0 -b $RELAY_VIDEO_BLOCKS -r $RELAY_VIDEO_FECS -f $RELAY_VIDEO_BLOCKLENGTH -t $VIDEO_FRAMETYPE -d 24 -y 0 relay0 > /dev/null 2>&1 &
 		fi
 
 		# update NICS variable in case a NIC has been removed (exclude devices with wlanx)
 		NICS=`ls /sys/class/net/ | nice grep -v eth0 | nice grep -v lo | nice grep -v usb | nice grep -v intwifi | nice grep -v wlan | nice grep -v relay | nice grep -v wifihotspot`
 
 		tmessage "Starting RX ... (FEC: $VIDEO_BLOCKS/$VIDEO_FECS/$VIDEO_BLOCKLENGTH)"
-		ionice -c 1 -n 3 /root/wifibroadcast/rx -p 0 -d 1 -b $VIDEO_BLOCKS -r $VIDEO_FECS -f $VIDEO_BLOCKLENGTH $NICS | ionice -c 1 -n 4 nice -n -10 tee >(ionice -c 1 -n 4 nice -n -10 /root/wifibroadcast_misc/ftee /root/videofifo2 > /dev/null 2>&1) >(ionice -c 1 nice -n -10 /root/wifibroadcast_misc/ftee /root/videofifo4 > /dev/null 2>&1) >(ionice -c 3 nice /root/wifibroadcast_misc/ftee /root/videofifo3 > /dev/null 2>&1) | ionice -c 1 -n 4 nice -n -10 /root/wifibroadcast_misc/ftee /root/videofifo1 > /dev/null 2>&1
+		ionice -c 1 -n 3 /home/pi/wifibroadcast-base/rx -p 0 -d 1 -b $VIDEO_BLOCKS -r $VIDEO_FECS -f $VIDEO_BLOCKLENGTH $NICS | ionice -c 1 -n 4 nice -n -10 tee >(ionice -c 1 -n 4 nice -n -10 /root/wifibroadcast_misc/ftee /root/videofifo2 > /dev/null 2>&1) >(ionice -c 1 nice -n -10 /root/wifibroadcast_misc/ftee /root/videofifo4 > /dev/null 2>&1) >(ionice -c 3 nice /root/wifibroadcast_misc/ftee /root/videofifo3 > /dev/null 2>&1) | ionice -c 1 -n 4 nice -n -10 /root/wifibroadcast_misc/ftee /root/videofifo1 > /dev/null 2>&1
 
 		RX_EXITSTATUS=${PIPESTATUS[0]}
 		check_exitstatus $RX_EXITSTATUS

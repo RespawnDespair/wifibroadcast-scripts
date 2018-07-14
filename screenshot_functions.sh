@@ -23,7 +23,7 @@ function screenshot_function {
 		# pause loop while saving is in progress
 		pause_while
 		
-		SCALIVE=`nice /root/wifibroadcast/check_alive`
+		SCALIVE=`nice /home/pi/wifibroadcast-base/check_alive`
 		LIMITFREE=3000 # 3 mbyte
 		
 		# do nothing if no video being received (so we don't take unnecessary screeshots)
@@ -36,7 +36,7 @@ function screenshot_function {
 			
 				echo "Taking screenshot: $PNG_NAME"
 				
-				ionice -c 3 nice -n 19 /root/wifibroadcast_misc/raspi2png -p $PNG_NAME
+				ionice -c 3 nice -n 19 /home/pi/wifibroadcast-misc/raspi2png -p $PNG_NAME
 			else
 				echo "RAM disk full - no screenshot taken ..."
 			fi

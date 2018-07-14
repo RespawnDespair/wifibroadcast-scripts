@@ -15,7 +15,7 @@ function osdrx_function {
 		
 		sleep 5
 		
-        nice /root/wifibroadcast_status/wbc_status "ERROR: Could not build OSD, check osdconfig.txt for errors." 7 55 0
+        nice /home/pi/wifibroadcast-status/wbc_status "ERROR: Could not build OSD, check osdconfig.txt for errors." 7 55 0
 		
 		sleep 5
     }
@@ -39,18 +39,18 @@ function osdrx_function {
 
 		if [ "$TELEMETRY_TRANSMISSION" == "wbc" ]; then
 			echo "Telemetry transmission WBC chosen, using wbc rx"
-			TELEMETRY_RX_CMD="/root/wifibroadcast/rx_rc_telemetry_buf -p 1 -o 1 -r 99"
+			TELEMETRY_RX_CMD="/home/pi/wifibroadcast-base/rx_rc_telemetry_buf -p 1 -o 1 -r 99"
 		else
 			echo "Telemetry transmission external chosen, using cat from serialport"
 			nice stty -F $EXTERNAL_TELEMETRY_SERIALPORT_GROUND $EXTERNAL_TELEMETRY_SERIALPORT_GROUND_STTY_OPTIONS $EXTERNAL_TELEMETRY_SERIALPORT_GROUND_BAUDRATE
-			#nice /root/wifibroadcast/setupuart -d 0 -s $EXTERNAL_TELEMETRY_SERIALPORT_GROUND -b $EXTERNAL_TELEMETRY_SERIALPORT_GROUND_BAUDRATE
+			#nice /home/pi/wifibroadcast-base/setupuart -d 0 -s $EXTERNAL_TELEMETRY_SERIALPORT_GROUND -b $EXTERNAL_TELEMETRY_SERIALPORT_GROUND_BAUDRATE
 			TELEMETRY_RX_CMD="cat $EXTERNAL_TELEMETRY_SERIALPORT_GROUND"
 		fi
 
 		if [ "$ENABLE_SERIAL_TELEMETRY_OUTPUT" == "Y" ]; then
 			echo "enable_serial_telemetry_output is Y, sending telemetry stream to $TELEMETRY_OUTPUT_SERIALPORT_GROUND"
 			nice stty -F $TELEMETRY_OUTPUT_SERIALPORT_GROUND $TELEMETRY_OUTPUT_SERIALPORT_GROUND_STTY_OPTIONS $TELEMETRY_OUTPUT_SERIALPORT_GROUND_BAUDRATE
-			#nice /root/wifibroadcast/setupuart -d 1 -s $TELEMETRY_OUTPUT_SERIALPORT_GROUND -b $TELEMETRY_OUTPUT_SERIALPORT_GROUND_BAUDRATE
+			#nice /home/pi/wifibroadcast-base/setupuart -d 1 -s $TELEMETRY_OUTPUT_SERIALPORT_GROUND -b $TELEMETRY_OUTPUT_SERIALPORT_GROUND_BAUDRATE
 			nice cat /root/telemetryfifo6 > $TELEMETRY_OUTPUT_SERIALPORT_GROUND &
 		fi
 
@@ -66,7 +66,7 @@ function osdrx_function {
 		/tmp/osd >> /wbc_tmp/telemetrydowntmp.txt &
 
 		if [ "$RELAY" == "Y" ]; then
-			ionice -c 1 -n 4 nice -n -9 cat /root/telemetryfifo4 | nice /root/wifibroadcast/tx_telemetry -p 1 -c $TELEMETRY_CTS -r 2 -x $TELEMETRY_TYPE -d 12 -y 0 relay0 > /dev/null 2>&1 &
+			ionice -c 1 -n 4 nice -n -9 cat /root/telemetryfifo4 | nice /home/pi/wifibroadcast-base/tx_telemetry -p 1 -c $TELEMETRY_CTS -r 2 -x $TELEMETRY_TYPE -d 12 -y 0 relay0 > /dev/null 2>&1 &
 		fi
 
 		# update NICS variable in case a NIC has been removed (exclude devices with wlanx)

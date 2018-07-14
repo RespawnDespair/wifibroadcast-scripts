@@ -80,17 +80,17 @@ function uplinkrx_and_rcrx_function {
 		esac
 		if [ "$FC_TELEMETRY_SERIALPORT" == "$FC_RC_SERIALPORT" ]; then # TODO: check if this logic works in all cases
 			if [ "$TELEMETRY_UPLINK" == "mavlink" ]; then # use the telemetry serialport and baudrate as it's the same anyway
-				/root/wifibroadcast/rx_rc_telemetry -p 3 -o 0 -b $FC_TELEMETRY_BAUDRATE -s $FC_TELEMETRY_SERIALPORT -r $RC_PROTOCOL $NICS
+				/home/pi/wifibroadcast-base/rx_rc_telemetry -p 3 -o 0 -b $FC_TELEMETRY_BAUDRATE -s $FC_TELEMETRY_SERIALPORT -r $RC_PROTOCOL $NICS
 			else # use the configured r/c serialport and baudrate
-				/root/wifibroadcast/rx_rc_telemetry -p 3 -o 0 -b $FC_RC_BAUDRATE -s $FC_RC_SERIALPORT -r $RC_PROTOCOL $NICS
+				/home/pi/wifibroadcast-base/rx_rc_telemetry -p 3 -o 0 -b $FC_RC_BAUDRATE -s $FC_RC_SERIALPORT -r $RC_PROTOCOL $NICS
 			fi
 		else
-			#/root/wifibroadcast/setupuart -d 1 -s $FC_TELEMETRY_SERIALPORT -b $FC_TELEMETRY_BAUDRATE
-			/root/wifibroadcast/rx_rc_telemetry -p 3 -o 1 -b $FC_RC_BAUDRATE -s $FC_RC_SERIALPORT -r $RC_PROTOCOL $NICS > $FC_TELEMETRY_SERIALPORT
+			#/home/pi/wifibroadcast-base/setupuart -d 1 -s $FC_TELEMETRY_SERIALPORT -b $FC_TELEMETRY_BAUDRATE
+			/home/pi/wifibroadcast-base/rx_rc_telemetry -p 3 -o 1 -b $FC_RC_BAUDRATE -s $FC_RC_SERIALPORT -r $RC_PROTOCOL $NICS > $FC_TELEMETRY_SERIALPORT
 		fi
     else # without R/C
-		#/root/wifibroadcast/setupuart -d 1 -s $FC_TELEMETRY_SERIALPORT -b $FC_TELEMETRY_BAUDRATE
-		nice /root/wifibroadcast/rx_rc_telemetry -p 3 -o 1 -r 99 $NICS > $FC_TELEMETRY_SERIALPORT
+		#/home/pi/wifibroadcast-base/setupuart -d 1 -s $FC_TELEMETRY_SERIALPORT -b $FC_TELEMETRY_BAUDRATE
+		nice /home/pi/wifibroadcast-base/rx_rc_telemetry -p 3 -o 1 -r 99 $NICS > $FC_TELEMETRY_SERIALPORT
     fi
 }
 
@@ -101,7 +101,7 @@ function mspdownlinktx_function {
     sleep 365d
     # setup serial port
     stty -F $FC_MSP_SERIALPORT -imaxbel -opost -isig -icanon -echo -echoe -ixoff -ixon $FC_MSP_BAUDRATE
-    #/root/wifibroadcast/setupuart -d 0 -s $FC_MSP_SERIALPORT -b $FC_MSP_BAUDRATE
+    #/home/pi/wifibroadcast-base/setupuart -d 0 -s $FC_MSP_SERIALPORT -b $FC_MSP_BAUDRATE
 
     # wait until tx is running to make sure NICS are configured
     echo
@@ -124,7 +124,7 @@ function mspdownlinktx_function {
 	
     while true; do
         echo "Starting MSP transmission, FC MSP Serialport: $FC_MSP_SERIALPORT"
-		nice cat $FC_MSP_SERIALPORT | nice /root/wifibroadcast/tx_telemetry -p 4 -c $TELEMETRY_CTS -r 2 -x 1 -d 12 -y 0 $NICS
+		nice cat $FC_MSP_SERIALPORT | nice /home/pi/wifibroadcast-base/tx_telemetry -p 4 -c $TELEMETRY_CTS -r 2 -x 1 -d 12 -y 0 $NICS
         ps -ef | nice grep "cat $FC_MSP_SERIALPORT" | nice grep -v grep | awk '{print $2}' | xargs kill -9
         ps -ef | nice grep "tx_telemetry -p 4" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 	echo "MSP telemetry TX exited - restarting ..."
@@ -160,10 +160,10 @@ function uplinktx_function {
 			echo $NICS
 			if [ "$TELEMETRY_UPLINK" == "mavlink" ]; then
 				VSERIALPORT=/dev/pts/0
-				UPLINK_TX_CMD="nice /root/wifibroadcast/tx_telemetry -p 3 -c 0 -r 2 -x 0 -d 12 -y 0"
+				UPLINK_TX_CMD="nice /home/pi/wifibroadcast-base/tx_telemetry -p 3 -c 0 -r 2 -x 0 -d 12 -y 0"
 			else # MSP
 				VSERIALPORT=/dev/pts/2
-				UPLINK_TX_CMD="nice /root/wifibroadcast/tx_telemetry -p 3 -c 0 -r 2 -x 1 -d 12 -y 0"
+				UPLINK_TX_CMD="nice /home/pi/wifibroadcast-base/tx_telemetry -p 3 -c 0 -r 2 -x 1 -d 12 -y 0"
 			fi
 
 			if [ "$DEBUG" == "Y" ]; then
@@ -217,13 +217,13 @@ function mspdownlinkrx_function {
     while true; do
 		#
 		#if [ "$RELAY" == "Y" ]; then
-		#    ionice -c 1 -n 4 nice -n -9 cat /root/telemetryfifo4 | /root/wifibroadcast/tx_rawsock -p 1 -b $RELAY_TELEMETRY_BLOCKS -r $RELAY_TELEMETRY_FECS -f $RELAY_TELEMETRY_BLOCKLENGTH -m $TELEMETRY_MIN_BLOCKLENGTH -y 0 relay0 > /dev/null 2>&1 &
+		#    ionice -c 1 -n 4 nice -n -9 cat /root/telemetryfifo4 | /home/pi/wifibroadcast-base/tx_rawsock -p 1 -b $RELAY_TELEMETRY_BLOCKS -r $RELAY_TELEMETRY_FECS -f $RELAY_TELEMETRY_BLOCKLENGTH -m $TELEMETRY_MIN_BLOCKLENGTH -y 0 relay0 > /dev/null 2>&1 &
 		#fi
 		# update NICS variable in case a NIC has been removed (exclude devices with wlanx)
 		NICS=`ls /sys/class/net/ | nice grep -v eth0 | nice grep -v lo | nice grep -v usb | nice grep -v intwifi | nice grep -v wlan | nice grep -v relay | nice grep -v wifihotspot`
-		#nice /root/wifibroadcast/rx -p 4 -d 1 -b $TELEMETRY_BLOCKS -r $TELEMETRY_FECS -f $TELEMETRY_BLOCKLENGTH $NICS | ionice nice /root/wifibroadcast_misc/ftee /root/mspfifo > /dev/null 2>&1
+		#nice /home/pi/wifibroadcast-base/rx -p 4 -d 1 -b $TELEMETRY_BLOCKS -r $TELEMETRY_FECS -f $TELEMETRY_BLOCKLENGTH $NICS | ionice nice /home/pi/wifibroadcast-misc/ftee /root/mspfifo > /dev/null 2>&1
 		echo "Starting msp downlink rx ..."
-		nice /root/wifibroadcast/rx_rc_telemetry -p 4 -o 1 -r 99 $NICS | ionice nice /root/wifibroadcast_misc/ftee /root/mspfifo > /dev/null 2>&1
+		nice /home/pi/wifibroadcast-base/rx_rc_telemetry -p 4 -o 1 -r 99 $NICS | ionice nice /home/pi/wifibroadcast-misc/ftee /root/mspfifo > /dev/null 2>&1
 		echo "ERROR: MSP RX has been stopped - restarting ..."
 		ps -ef | nice grep "rx_rc_telemetry -p 4" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 		ps -ef | nice grep "ftee /root/mspfifo" | nice grep -v grep | awk '{print $2}' | xargs kill -9

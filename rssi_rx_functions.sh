@@ -27,5 +27,5 @@ function rssirx_function {
     
 	echo "Starting RSSI RX ..."
     
-	nice /root/wifibroadcast/rssirx $NICS
+	nice /home/pi/wifibroadcast-base/rssirx $NICS
 }
