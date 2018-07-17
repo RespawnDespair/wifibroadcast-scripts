@@ -10,8 +10,8 @@
 ###############################################################################
 source global_functions.sh 
 
-#TTY=`tty`
-TTY="/dev/tty1"
+TTY=`tty`
+#TTY="/dev/tty1"
 
 # Check for the camera
 check_camera_attached
