@@ -342,7 +342,7 @@ function collect_errorlog {
     echo >>/boot/errorlog.txt
     nice vcgencmd get_config int >>/boot/errorlog.txt
 
-    nice /root/wifibroadcast_misc/raspi2png -p /boot/errorlog.png
+    nice /home/pi/wifibroadcast-misc/raspi2png -p /boot/errorlog.png
     echo >>/boot/errorlog.txt
     nice dmesg >>/boot/errorlog.txt
     echo >>/boot/errorlog.txt
@@ -381,19 +381,19 @@ function wbclogger_function {
 	
     sleep 5
 	
-    nice /root/wifibroadcast/rssilogger /wifibroadcast_rx_status_0 >> /wbc_tmp/videorssi.csv &
-    nice /root/wifibroadcast/rssilogger /wifibroadcast_rx_status_1 >> /wbc_tmp/telemetrydownrssi.csv &
-    nice /root/wifibroadcast/syslogger /wifibroadcast_rx_status_sysair >> /wbc_tmp/system.csv &
+    nice /home/pi/wifibroadcast-base/rssilogger /wifibroadcast_rx_status_0 >> /wbc_tmp/videorssi.csv &
+    nice /home/pi/wifibroadcast-base/rssilogger /wifibroadcast_rx_status_1 >> /wbc_tmp/telemetrydownrssi.csv &
+    nice /home/pi/wifibroadcast-base/syslogger /wifibroadcast_rx_status_sysair >> /wbc_tmp/system.csv &
 
     if [ "$TELEMETRY_UPLINK" != "disabled" ]; then
-		nice /root/wifibroadcast/rssilogger /wifibroadcast_rx_status_uplink >> /wbc_tmp/telemetryuprssi.csv &
+		nice /home/pi/wifibroadcast-base/rssilogger /wifibroadcast_rx_status_uplink >> /wbc_tmp/telemetryuprssi.csv &
     fi
     if [ "$RC" != "disabled" ]; then
-		nice /root/wifibroadcast/rssilogger /wifibroadcast_rx_status_rc >> /wbc_tmp/rcrssi.csv &
+		nice /home/pi/wifibroadcast-base/rssilogger /wifibroadcast_rx_status_rc >> /wbc_tmp/rcrssi.csv &
     fi
 
     if [ "$DEBUG" == "Y" ]; then
-		nice /root/wifibroadcast/wifibackgroundscan $NICS >> /wbc_tmp/wifibackgroundscan.csv &
+		nice /home/pi/wifibroadcast-base/wifibackgroundscan $NICS >> /wbc_tmp/wifibackgroundscan.csv &
     fi
     sleep 365d
 }
@@ -506,7 +506,7 @@ function detect_nics {
 			
 			# make sure check_alive function doesnt restart hello_video while we are still scanning for channel
 			touch /tmp/pausewhile
-			/root/wifibroadcast/rx -p 0 -d 1 -b $VIDEO_BLOCKS -r $VIDEO_FECS -f $VIDEOBLOCKLENGTH $NICS >/dev/null &
+			/home/pi/wifibroadcast-base/rx -p 0 -d 1 -b $VIDEO_BLOCKS -r $VIDEO_FECS -f $VIDEOBLOCKLENGTH $NICS >/dev/null &
 			sleep 0.5
 			
 			echo
@@ -514,12 +514,12 @@ function detect_nics {
 			FREQ=0
 
 			if iw list | nice grep -q 5180; then # cards support 5G and 2.4G
-				FREQCMD="/root/wifibroadcast/channelscan 245 $NICS"
+				FREQCMD="/home/pi/wifibroadcast-base/channelscan 245 $NICS"
 			else
 				if iw list | nice grep -q 2312; then # cards support 2.3G and 2.4G
-					FREQCMD="/root/wifibroadcast/channelscan 2324 $NICS"
+					FREQCMD="/home/pi/wifibroadcast-base/channelscan 2324 $NICS"
 				else # cards support only 2.4G
-					FREQCMD="/root/wifibroadcast/channelscan 24 $NICS"
+					FREQCMD="/home/pi/wifibroadcast-base/channelscan 24 $NICS"
 				fi
 			fi
 

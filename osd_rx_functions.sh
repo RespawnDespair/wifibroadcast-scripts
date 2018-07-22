@@ -5,7 +5,7 @@ function osdrx_function {
     ionice -c 3 nice dos2unix -n /boot/osdconfig.txt /tmp/osdconfig.txt
     echo
 	
-    cd /root/wifibroadcast_osd
+    cd /home/pi/wifibroadcast_osd
 	
     echo Building OSD:
 	
@@ -74,12 +74,12 @@ function osdrx_function {
 
 		if [ "$TELEMETRY_TRANSMISSION" == "wbc" ]; then
 			if [ "$DEBUG" == "Y" ]; then
-				$TELEMETRY_RX_CMD -d 1 $NICS 2>/wbc_tmp/telemetrydowndebug.txt | tee >(/root/wifibroadcast_misc/ftee /root/telemetryfifo2 > /dev/null 2>&1) >(/root/wifibroadcast_misc/ftee /root/telemetryfifo3 > /dev/null 2>&1) >(ionice -c 1 nice -n -9 /root/wifibroadcast_misc/ftee /root/telemetryfifo4 > /dev/null 2>&1) >(ionice nice /root/wifibroadcast_misc/ftee /root/telemetryfifo5 > /dev/null 2>&1) >(ionice nice /root/wifibroadcast_misc/ftee /root/telemetryfifo6 > /dev/null 2>&1) | /root/wifibroadcast_misc/ftee /root/telemetryfifo1 > /dev/null 2>&1
+				$TELEMETRY_RX_CMD -d 1 $NICS 2>/wbc_tmp/telemetrydowndebug.txt | tee >(/home/pi/wifibroadcast-misc/ftee /root/telemetryfifo2 > /dev/null 2>&1) >(/home/pi/wifibroadcast-misc/ftee /root/telemetryfifo3 > /dev/null 2>&1) >(ionice -c 1 nice -n -9 /home/pi/wifibroadcast-misc/ftee /root/telemetryfifo4 > /dev/null 2>&1) >(ionice nice /home/pi/wifibroadcast-misc/ftee /root/telemetryfifo5 > /dev/null 2>&1) >(ionice nice /home/pi/wifibroadcast-misc/ftee /root/telemetryfifo6 > /dev/null 2>&1) | /home/pi/wifibroadcast-misc/ftee /root/telemetryfifo1 > /dev/null 2>&1
 			else
-				nice -n -5 $TELEMETRY_RX_CMD $NICS | tee >(/root/wifibroadcast_misc/ftee /root/telemetryfifo2 > /dev/null 2>&1) >(/root/wifibroadcast_misc/ftee /root/telemetryfifo3 > /dev/null 2>&1) >(ionice -c 1 nice -n -9 /root/wifibroadcast_misc/ftee /root/telemetryfifo4 > /dev/null 2>&1) >(ionice nice /root/wifibroadcast_misc/ftee /root/telemetryfifo5 > /dev/null 2>&1) >(ionice nice /root/wifibroadcast_misc/ftee /root/telemetryfifo6 > /dev/null 2>&1) | /root/wifibroadcast_misc/ftee /root/telemetryfifo1 > /dev/null 2>&1
+				nice -n -5 $TELEMETRY_RX_CMD $NICS | tee >(/home/pi/wifibroadcast-misc/ftee /root/telemetryfifo2 > /dev/null 2>&1) >(/home/pi/wifibroadcast-misc/ftee /root/telemetryfifo3 > /dev/null 2>&1) >(ionice -c 1 nice -n -9 /home/pi/wifibroadcast-misc/ftee /root/telemetryfifo4 > /dev/null 2>&1) >(ionice nice /home/pi/wifibroadcast-misc/ftee /root/telemetryfifo5 > /dev/null 2>&1) >(ionice nice /home/pi/wifibroadcast-misc/ftee /root/telemetryfifo6 > /dev/null 2>&1) | /home/pi/wifibroadcast-misc/ftee /root/telemetryfifo1 > /dev/null 2>&1
 			fi
 		else
-			$TELEMETRY_RX_CMD | tee >(/root/wifibroadcast_misc/ftee /root/telemetryfifo2 > /dev/null 2>&1) >(/root/wifibroadcast_misc/ftee /root/telemetryfifo3 > /dev/null 2>&1) >(ionice -c 1 nice -n -9 /root/wifibroadcast_misc/ftee /root/telemetryfifo4 > /dev/null 2>&1) >(ionice nice /root/wifibroadcast_misc/ftee /root/telemetryfifo5 > /dev/null 2>&1) >(ionice nice /root/wifibroadcast_misc/ftee /root/telemetryfifo6 > /dev/null 2>&1) | /root/wifibroadcast_misc/ftee /root/telemetryfifo1 > /dev/null 2>&1
+			$TELEMETRY_RX_CMD | tee >(/home/pi/wifibroadcast-misc/ftee /root/telemetryfifo2 > /dev/null 2>&1) >(/home/pi/wifibroadcast-misc/ftee /root/telemetryfifo3 > /dev/null 2>&1) >(ionice -c 1 nice -n -9 /home/pi/wifibroadcast-misc/ftee /root/telemetryfifo4 > /dev/null 2>&1) >(ionice nice /home/pi/wifibroadcast-misc/ftee /root/telemetryfifo5 > /dev/null 2>&1) >(ionice nice /home/pi/wifibroadcast-misc/ftee /root/telemetryfifo6 > /dev/null 2>&1) | /home/pi/wifibroadcast-misc/ftee /root/telemetryfifo1 > /dev/null 2>&1
 		fi
 		
 		echo "ERROR: Telemetry RX has been stopped - restarting RX and OSD ..."
