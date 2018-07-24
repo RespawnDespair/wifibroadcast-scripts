@@ -1,8 +1,7 @@
 function check_camera_attached {
 	# check if cam is detected to determine if we're going to be RX or TX
 	# only do this on one tty so that we don't run vcgencmd multiple times (which may make it hang)
-	#if [ "$TTY" == "/dev/tty1" ]; then
-	if [ "1" == "1" ]; then
+	if [ "$TTY" == "/dev/tty1" ]; then
 		CAM=`/usr/bin/vcgencmd get_camera | nice grep -c detected=1`
 		if [ "$CAM" == "0" ]; then # if we are RX ...
 			echo  "0" > /tmp/cam
