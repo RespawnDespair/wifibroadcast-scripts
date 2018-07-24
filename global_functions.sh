@@ -4,6 +4,40 @@ function tmessage {
     fi
 }
 
+function check_exitstatus {
+    STATUS=$1
+    case $STATUS in
+    9)
+	# rx returned with exit code 9 = the interface went down
+	# wifi card must've been removed during running
+	# check if wifi card is really gone
+	NICS2=`ls /sys/class/net/ | nice grep -v eth0 | nice grep -v lo | nice grep -v usb | nice grep -v intwifi | nice grep -v relay | nice grep -v wifihotspot`
+	if [ "$NICS" == "$NICS2" ]; then
+	    # wifi card has not been removed, something else must've gone wrong
+	    echo "ERROR: RX stopped, wifi card _not_ removed!             "
+	else
+	    # wifi card has been removed
+	    echo "ERROR: Wifi card removed!                               "
+	fi
+    ;;
+    2)
+	# something else that is fatal happened during running
+	echo "ERROR: RX chain stopped wifi card _not_ removed!             "
+    ;;
+    1)
+	# something that is fatal went wrong at rx startup
+	echo "ERROR: could not start RX                           "
+	#echo "ERROR: could not start RX                           "
+    ;;
+    *)
+	if [  $RX_EXITSTATUS -lt 128 ]; then
+	    # whatever it was ...
+	    #echo "RX exited with status: $RX_EXITSTATUS                        "
+	    echo -n ""
+	fi
+    esac
+}
+
 function check_camera_attached {
 	# check if cam is detected to determine if we're going to be RX or TX
 	# only do this on one tty so that we don't run vcgencmd multiple times (which may make it hang)
