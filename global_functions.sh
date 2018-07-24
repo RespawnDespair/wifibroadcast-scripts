@@ -592,3 +592,126 @@ function detect_nics {
 
 	touch /tmp/nics_configured # let other processes know nics are setup and ready
 }
+
+function prepare_nic {
+    DRIVER=`cat /sys/class/net/$1/device/uevent | nice grep DRIVER | sed 's/DRIVER=//'`
+    if [ "$DRIVER" != "rt2800usb" ] && [ "$DRIVER" != "mt7601u" ] && [ "$DRIVER" != "ath9k_htc" ]; then
+	tmessage "WARNING: Unsupported or experimental wifi card: $DRIVER"
+    fi
+
+    tmessage -n "Setting up $1: "
+    if [ "$DRIVER" == "ath9k_htc" ]; then # set bitrates for Atheros via iw
+	ifconfig $1 up || {
+	    echo
+	    echo "ERROR: Bringing up interface $1 failed!"
+	    collect_errorlog
+	    sleep 365d
+	}
+	sleep 0.2
+
+	if [ "$CAM" == "0" ]; then # we are RX, set bitrate to uplink bitrate
+	    #tmessage -n "bitrate $UPLINK_WIFI_BITRATE Mbit "
+	    if [ "$UPLINK_WIFI_BITRATE" != "19.5" ]; then # only set bitrate if something else than 19.5 is requested (19.5 is default compiled in ath9k_htc firmware)
+		iw dev $1 set bitrates legacy-2.4 $UPLINK_WIFI_BITRATE || {
+		    echo
+		    echo "ERROR: Setting bitrate on $1 failed!"
+		    collect_errorlog
+		    sleep 365d
+		}
+	    fi
+	    sleep 0.2
+	    #tmessage -n "done. "
+	else # we are TX, set bitrate to downstream bitrate
+	    tmessage -n "bitrate "
+	    if [ "$VIDEO_WIFI_BITRATE" != "19.5" ]; then # only set bitrate if something else than 19.5 is requested (19.5 is default compiled in ath9k_htc firmware)
+		tmessage -n "$VIDEO_WIFI_BITRATE Mbit "
+		iw dev $1 set bitrates legacy-2.4 $VIDEO_WIFI_BITRATE || {
+		    echo
+		    echo "ERROR: Setting bitrate on $1 failed!"
+		    collect_errorlog
+		    sleep 365d
+		}
+	    else
+		tmessage -n "$VIDEO_WIFI_BITRATE Mbit "
+	    fi
+	    sleep 0.2
+	    tmessage -n "done. "
+	fi
+
+	ifconfig $1 down || {
+	    echo
+	    echo "ERROR: Bringing down interface $1 failed!"
+	    collect_errorlog
+	    sleep 365d
+	}
+	sleep 0.2
+
+	tmessage -n "monitor mode.. "
+	iw dev $1 set monitor none || {
+	    echo
+	    echo "ERROR: Setting monitor mode on $1 failed!"
+	    collect_errorlog
+	    sleep 365d
+	}
+	sleep 0.2
+	tmessage -n "done. "
+
+	ifconfig $1 up || {
+	    echo
+	    echo "ERROR: Bringing up interface $1 failed!"
+	    collect_errorlog
+	    sleep 365d
+	}
+	sleep 0.2
+
+	if [ "$2" != "0" ]; then
+	    tmessage -n "frequency $2 MHz.. "
+	    iw dev $1 set freq $2 || {
+		echo
+		echo "ERROR: Setting frequency $2 MHz on $1 failed!"
+		collect_errorlog
+		sleep 365d
+	    }
+	    tmessage "done!"
+	else
+	    echo
+	fi
+
+    fi
+
+    if [ "$DRIVER" == "rt2800usb" ] || [ "$DRIVER" == "mt7601u" ] || [ "$DRIVER" == "rtl8192cu" ] || [ "$DRIVER" == "8812au" ]; then # do not set bitrate for Ralink, Mediatek, Realtek, done through tx parameter
+	tmessage -n "monitor mode.. "
+	iw dev $1 set monitor none || {
+	    echo
+	    echo "ERROR: Setting monitor mode on $1 failed!"
+	    collect_errorlog
+	    sleep 365d
+	}
+	sleep 0.2
+	tmessage -n "done. "
+
+	#tmessage -n "bringing up.. "
+	ifconfig $1 up || {
+	    echo
+	    echo "ERROR: Bringing up interface $1 failed!"
+	    collect_errorlog
+	    sleep 365d
+	}
+	sleep 0.2
+	#tmessage -n "done. "
+
+	if [ "$2" != "0" ]; then
+	    tmessage -n "frequency $2 MHz.. "
+	    iw dev $1 set freq $2 || {
+		echo
+		echo "ERROR: Setting frequency $2 MHz on $1 failed!"
+		collect_errorlog
+		sleep 365d
+	    }
+	    tmessage "done!"
+	else
+	    echo
+	fi
+
+    fi
+}
