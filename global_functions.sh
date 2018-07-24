@@ -1,3 +1,9 @@
+function tmessage {
+    if [ "$QUIET" == "N" ]; then
+	echo $1 "$2"
+    fi
+}
+
 function check_camera_attached {
 	# check if cam is detected to determine if we're going to be RX or TX
 	# only do this on one tty so that we don't run vcgencmd multiple times (which may make it hang)
@@ -41,6 +47,8 @@ function set_font_for_resolution {
 
 function read_config_file {
 	if [ -e "/boot/settings.sh" ]; then
+		dos2unix /boot/settings.sh /boot/settings.sh
+	
 		OK=`bash -n /boot/settings.sh`
 		if [ "$?" == "0" ]; then
 			source /boot/settings.sh
