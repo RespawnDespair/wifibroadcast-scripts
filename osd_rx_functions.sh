@@ -8,17 +8,18 @@ function osdrx_function {
     cd /home/pi/wifibroadcast_osd
 	
     echo Building OSD:
+    # Disabled temporarily
 	
-    ionice -c 3 nice make -j2 || {
-        echo
-        echo "ERROR: Could not build OSD, check osdconfig.txt!"
+    #ionice -c 3 nice make -j2 || {
+    #    echo
+    #    echo "ERROR: Could not build OSD, check osdconfig.txt!"
 		
-		sleep 5
+#		sleep 5
 		
-        nice /home/pi/wifibroadcast-status/wbc_status "ERROR: Could not build OSD, check osdconfig.txt for errors." 7 55 0
+ #       nice /home/pi/wifibroadcast-status/wbc_status "ERROR: Could not build OSD, check osdconfig.txt for errors." 7 55 0
 		
-		sleep 5
-    }
+#		sleep 5
+ #   }
 	
     echo
 
@@ -63,7 +64,7 @@ function osdrx_function {
 
 		ionice -c 3 nice cat /root/telemetryfifo3 >> /wbc_tmp/telemetrydowntmp.raw &
 		pause_while
-		/tmp/osd >> /wbc_tmp/telemetrydowntmp.txt &
+		/home/pi/wifibroadcast-osd/osd >> /wbc_tmp/telemetrydowntmp.txt &
 
 		if [ "$RELAY" == "Y" ]; then
 			ionice -c 1 -n 4 nice -n -9 cat /root/telemetryfifo4 | nice /home/pi/wifibroadcast-base/tx_telemetry -p 1 -c $TELEMETRY_CTS -r 2 -x $TELEMETRY_TYPE -d 12 -y 0 relay0 > /dev/null 2>&1 &
@@ -85,7 +86,7 @@ function osdrx_function {
 		echo "ERROR: Telemetry RX has been stopped - restarting RX and OSD ..."
 		ps -ef | nice grep "rx -p 1" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 		ps -ef | nice grep "ftee /root/telemetryfifo" | nice grep -v grep | awk '{print $2}' | xargs kill -9
-		ps -ef | nice grep "/tmp/osd" | nice grep -v grep | awk '{print $2}' | xargs kill -9
+		ps -ef | nice grep "/home/pi/wifibroadcast-osd/osd" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 		ps -ef | nice grep "cat /root/telemetryfifo3" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 		sleep 1
     done
