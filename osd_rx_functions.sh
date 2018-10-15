@@ -63,7 +63,7 @@ function osdrx_function {
 
 		ionice -c 3 nice cat /root/telemetryfifo3 >> /wbc_tmp/telemetrydowntmp.raw &
 		pause_while
-		/home/pi/wifibroadcast-osd/osd >> /wbc_tmp/telemetrydowntmp.txt &
+		/tmp/osd >> /wbc_tmp/telemetrydowntmp.txt &
 
 		if [ "$RELAY" == "Y" ]; then
 			ionice -c 1 -n 4 nice -n -9 cat /root/telemetryfifo4 | nice /home/pi/wifibroadcast-base/tx_telemetry -p 1 -c $TELEMETRY_CTS -r 2 -x $TELEMETRY_TYPE -d 12 -y 0 relay0 > /dev/null 2>&1 &
