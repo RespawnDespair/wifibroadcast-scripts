@@ -80,12 +80,12 @@ function set_font_for_resolution {
 }
 
 function read_config_file {
-	if [ -e "/boot/settings.sh" ]; then
-		dos2unix /boot/settings.sh /boot/settings.sh
+	if [ -e "/boot/wifibroadcast-1.txt" ]; then
+		dos2unix /boot/wifibroadcast-1.txt /tmp/settings.sh
 	
-		OK=`bash -n /boot/settings.sh`
+		OK=`bash -n /tmp/settings.sh`
 		if [ "$?" == "0" ]; then
-			source /boot/settings.sh
+			source /tmp/settings.sh
 		else
 			echo "ERROR: wifibroadcast config file contains syntax error(s)!"
 			collect_errorlog
