@@ -85,7 +85,7 @@ function osdrx_function {
 		echo "ERROR: Telemetry RX has been stopped - restarting RX and OSD ..."
 		ps -ef | nice grep "rx -p 1" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 		ps -ef | nice grep "ftee /root/telemetryfifo" | nice grep -v grep | awk '{print $2}' | xargs kill -9
-		ps -ef | nice grep "/home/pi/wifibroadcast-osd/osd" | nice grep -v grep | awk '{print $2}' | xargs kill -9
+		ps -ef | nice grep "/tmp/osd" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 		ps -ef | nice grep "cat /root/telemetryfifo3" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 		sleep 1
     done
