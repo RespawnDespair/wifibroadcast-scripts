@@ -5,21 +5,20 @@ function osdrx_function {
     ionice -c 3 nice dos2unix -n /boot/osdconfig.txt /tmp/osdconfig.txt
     echo
 	
-    cd /home/pi/wifibroadcast_osd
+    cd /home/pi/wifibroadcast-osd
 	
     echo Building OSD:
-    # Disabled temporarily
 	
-    #ionice -c 3 nice make -j2 || {
-    #    echo
-    #    echo "ERROR: Could not build OSD, check osdconfig.txt!"
+    ionice -c 3 nice make -j2 || {
+        echo
+        echo "ERROR: Could not build OSD, check osdconfig.txt!"
 		
-#		sleep 5
+		sleep 5
 		
- #       nice /home/pi/wifibroadcast-status/wbc_status "ERROR: Could not build OSD, check osdconfig.txt for errors." 7 55 0
+        nice /home/pi/wifibroadcast-status/wbc_status "ERROR: Could not build OSD, check osdconfig.txt for errors." 7 55 0
 		
-#		sleep 5
- #   }
+		sleep 5
+    }
 	
     echo
 
