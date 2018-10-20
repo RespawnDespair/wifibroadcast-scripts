@@ -81,7 +81,7 @@ function set_font_for_resolution {
 
 function read_config_file {
 	if [ -e "/boot/wifibroadcast-1.txt" ]; then
-		dos2unix /boot/wifibroadcast-1.txt /tmp/settings.sh
+		ionice -c 3 nice dos2unix -n /boot/wifibroadcast-1.txt /tmp/settings.sh
 	
 		OK=`bash -n /tmp/settings.sh`
 		if [ "$?" == "0" ]; then
