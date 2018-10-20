@@ -2,7 +2,7 @@
 function osdrx_function {
     echo
     # Convert osdconfig from DOS format to UNIX format
-    ionice -c 3 nice dos2unix -n /boot/osdconfig.txt /tmp/osdconfig.txt
+    ionice -c 3 nice dos2unix -n /boot/osdconfig.txt /tmp/osdconfig.h
     echo
 	
     cd /home/pi/wifibroadcast-osd
