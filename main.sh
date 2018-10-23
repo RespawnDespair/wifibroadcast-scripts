@@ -118,7 +118,8 @@ case $TTY in
 			echo "Ethernet connection detected"
 			CARRIER=1
 			if nice pump -i eth0 --no-ntp -h $EZHOSTNAME; then
-			    ETHCLIENTIP=`ifconfig eth0 | grep "inet addr" | cut -d ':' -f 2 | cut -d ' ' -f 1`
+			    #ETHCLIENTIP=`ifconfig eth0 | grep "inet addr" | cut -d ':' -f 2 | cut -d ' ' -f 1`
+			    ETHCLIENTIP=`ip addr show eth0 | grep -Po 'inet \K[\d.]+'`
 			    # kill and pause OSD so we can safeley start wbc_status
 			    ps -ef | nice grep "osd" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 			    killall wbc_status > /dev/null 2>&1
