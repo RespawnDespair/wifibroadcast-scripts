@@ -24,7 +24,7 @@ function tx_function {
 
     echo
     echo
-	
+    dmesg -c >/dev/null 2>/dev/null
     detect_nics
 
     sleep 1
@@ -44,8 +44,18 @@ function tx_function {
 
     if [ "$TXMODE" == "single" ]; then
 		DRIVER=`cat /sys/class/net/$NICS/device/uevent | nice grep DRIVER | sed 's/DRIVER=//'`
+
+	        case $DRIVER in
+	            *881[24]au)
+	                DRIVER=rtl88xxau
+	            ;;
+	        esac
+
 		if [ "$DRIVER" != "ath9k_htc" ]; then # in single mode and ralink cards always, use frametype 1 (data)
-				VIDEO_FRAMETYPE=0
+			VIDEO_FRAMETYPE=0
+		        if [ "$DRIVER" == "rtl88xxau" ]; then
+		        	VIDEO_FRAMETYPE=1
+			fi
 			RALINK=1
 		fi
     else # for txmode dual always use frametype 1
@@ -61,6 +71,13 @@ function tx_function {
     fi
 
     DRIVER=`cat /sys/class/net/$NICS/device/uevent | nice grep DRIVER | sed 's/DRIVER=//'`
+
+    case $DRIVER in
+        *881[24]au)
+            DRIVER=rtl88xxau
+        ;;
+    esac
+
     if [ "$CTS_PROTECTION" == "auto" ] && [ "$DRIVER" == "ath9k_htc" ]; then # only use CTS protection with Atheros
     	echo -n "Checking for other wifi traffic ... "
 		WIFIPPS=`/home/pi/wifibroadcast-base/wifiscan $NICS`

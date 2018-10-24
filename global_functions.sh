@@ -584,7 +584,7 @@ function detect_nics {
 	    else
 			for NIC in $NICS
 			do
-				prepare_nic $NIC $FREQ
+				prepare_nic $NIC $FREQ "$TXPOWER"
 				sleep 0.1
 			done
 	    fi
@@ -598,6 +598,12 @@ function prepare_nic {
     if [ "$DRIVER" != "rt2800usb" ] && [ "$DRIVER" != "mt7601u" ] && [ "$DRIVER" != "ath9k_htc" ]; then
 	tmessage "WARNING: Unsupported or experimental wifi card: $DRIVER"
     fi
+
+    case $DRIVER in
+    *881[24]au)
+        DRIVER=rtl88xxau
+        ;;
+    esac
 
     tmessage -n "Setting up $1: "
     if [ "$DRIVER" == "ath9k_htc" ]; then # set bitrates for Atheros via iw
@@ -679,7 +685,7 @@ function prepare_nic {
 
     fi
 
-    if [ "$DRIVER" == "rt2800usb" ] || [ "$DRIVER" == "mt7601u" ] || [ "$DRIVER" == "rtl8192cu" ] || [ "$DRIVER" == "8812au" ]; then # do not set bitrate for Ralink, Mediatek, Realtek, done through tx parameter
+    if [ "$DRIVER" == "rt2800usb" ] || [ "$DRIVER" == "mt7601u" ] || [ "$DRIVER" == "rtl8192cu" ] || [ "$DRIVER" == "rtl88xxau" ]; then # do not set bitrate for Ralink, Mediatek, Realtek, done through tx parameter
 	tmessage -n "monitor mode.. "
 	iw dev $1 set monitor none || {
 	    echo
@@ -711,6 +717,18 @@ function prepare_nic {
 	    tmessage "done!"
 	else
 	    echo
+	fi
+
+	if  [ "$DRIVER" == "rtl88xxau" -a -n "$3" ]; then
+  	    tmessage -n "TX power $3.. "
+	    iw dev $1 set txpower fixed $3 || {
+	        echo
+	        echo "ERROR: Setting TX power to $3 on $1 failed!"
+	        collect_errorlog
+	        sleep 365d
+	    }
+	    sleep 0.2
+	    tmessage -n "done. "
 	fi
 
     fi

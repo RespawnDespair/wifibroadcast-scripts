@@ -113,7 +113,7 @@ case $TTY in
 	if [ "$ETHERNET_HOTSPOT" == "N" ]; then
 		# disabled loop, as usual, everything is flaky on the Pi, gives kernel stall messages ...
 		nice ifconfig eth0 up
-		sleep 2
+		sleep 5
 		    if cat /sys/class/net/eth0/carrier | nice grep -q 1; then
 			echo "Ethernet connection detected"
 			CARRIER=1
@@ -134,6 +134,7 @@ case $TTY in
 				    /tmp/osd >> /wbc_tmp/telemetrydowntmp.txt &
 				fi
 			    fi
+			    ping -n -q -c 1 1.1.1.1
 			else
 			    ps -ef | nice grep "pump -i eth0" | nice grep -v grep | awk '{print $2}' | xargs kill -9
 			    nice ifconfig eth0 down
