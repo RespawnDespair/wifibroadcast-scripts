@@ -13,6 +13,9 @@ source global_functions.sh
 TTY=`tty`
 #TTY="/dev/tty1"
 
+# GPIO variable
+CONFIGFILE=`/root/wifibroadcast_misc/gpio-config.py`
+
 # Check for the camera
 check_camera_attached
 
